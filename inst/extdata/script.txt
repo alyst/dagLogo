@@ -1,0 +1,9 @@
+> dat <- read.csv("inst/extdata/dagLogoTestData.csv")
+> library(biomaRt)> mart <- useMart("ensembl", "dmelanogaster_gene_ensembl")> source('/Volumes/Macintosh_HD_2/Jianhong/bioconductor/RStudio/dagLogo/R/fetchSequence.R')> dat <- read.csv("inst/extdata/dagLogoTestData.csv")> seq <- fetchSequence(as.character(dat$entrez_geneid), anchorPos=as.character(dat$NCBI_site), mart=mart, upstreamOffset=7, downstreamOffset=7)> head(seq$peptides)     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14] [,15][1,] "L"  "F"  "P"  "K"  "G"  "F"  "D"  "K"  "V"  "S"   "M"   "P"   "S"   "G"   "V"  [2,] "Q"  "A"  "A"  "L"  "E"  "S"  "N"  "K"  "K"  "A"   "F"   "R"   "S"   "W"   "S"  [3,] "V"  "G"  "S"  "D"  "Q"  "A"  "G"  "K"  "Y"  "I"   "Y"   "E"   "R"   "A"   "G"  [4,] "E"  "N"  "M"  "G"  "E"  "L"  "A"  "K"  "N"  "I"   "T"   "K"   "E"   "Q"   "G"  [5,] "V"  "E"  "R"  "A"  "Q"  "K"  "L"  "K"  "V"  "N"   "A"   "G"   "H"   "V"   "P"  [6,] "I"  "I"  "L"  "G"  "D"  "A"  "N"  "K"  "E"  "N"   "T"   "L"   "N"   "Q"   "L"  #> library(UniProt.ws)Loading required package: RSQLiteLoading required package: DBILoading required package: RCurlLoading required package: bitops#> taxId(UniProt.ws) <- 7227#> source('/Volumes/Macintosh_HD_2/Jianhong/bioconductor/RStudio/dagLogo/R/prepareProteome.R')#> proteome <- prepareProteome(UniProt.ws)Getting mapping data for P32234 ... and P_ENTREZGENEID> load("inst/extdata/dm.proteome.rds")
+> source('/Volumes/Macintosh_HD_2/Jianhong/bioconductor/RStudio/dagLogo/R/buildBackgroundModel.R')> bg <- buildBackgroundModel(seq, proteome=proteome)
+> source('/Volumes/Macintosh_HD_2/Jianhong/bioconductor/RStudio/dagLogo/R/testDAU.R')> t <- testDAU(seq, bg)
+> library(pheatmap)
+> source('/Volumes/Macintosh_HD_2/Jianhong/bioconductor/RStudio/dagLogo/R/dagLogo.R')
+> dagHeatmap(t)
+> library(motifStack)
+> plotMotifLogo(t$motif, colset=colorset("AA"), p=t$background)
