@@ -25,6 +25,7 @@ Jianhong Ou
 }
 \examples{
     if(interactive()){
+        library(UniProt.ws)
         taxId(UniProt.ws) <- 7227
         proteome <- prepareProteome(UniProt.ws, species="Drosophila melanogaster")
     }

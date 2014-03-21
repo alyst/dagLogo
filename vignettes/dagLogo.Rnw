@@ -101,6 +101,7 @@ proteome via UniProt webservice.
 
 <<prepareProteome,fig=FALSE,include=FALSE>>=
 if(interactive()){
+    library(UniProt.ws)
     taxId(UniProt.ws) <- 9606
     proteome <- prepareProteome(UniProt.ws=UniProt.ws)
 }
