@@ -10,7 +10,7 @@ prepareProteome <- function(UniProt.ws, fasta, species="unknown"){
         egs <- keys(UniProt.ws, "ENTREZ_GENE")
         cols <- c("SEQUENCE", "ID")
         proteome <- select(UniProt.ws, egs, cols, "ENTREZ_GENE")
-        proteome$SEQUENCE <- gsub(" ", "", proteome$SEQUENCE)
+        proteome$SEQUENCE <- gsub(" ", "", proteome$SEQUENCE,fixed=TRUE)
         proteome$LEN <- nchar(proteome$SEQUENCE)
         return(new("Proteome",
                    proteome=proteome,
@@ -24,8 +24,9 @@ prepareProteome <- function(UniProt.ws, fasta, species="unknown"){
             if(class(fasta)!="AAStringSet"){
                 stop("fasta should be character or an object AAStringSet", call.=FALSE)
             }
-            proteome <- data.frame(as.character(fasta))
-            colnames(proteome) <- "SEQUENCE"
+            proteome <- data.frame(SEQUENCE=as.character(fasta),
+                                   ID=names(fasta),
+                                   stringsAsFactors=FALSE)
         }
         return(new("Proteome", 
                    proteome=proteome,
