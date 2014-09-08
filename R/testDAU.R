@@ -1,5 +1,6 @@
 testDAU <- function(dagPeptides, dagBackground, 
-                    group=c("null", "classic", "charge", "chemistry", "hydrophobicity")){
+                    group=c("null", "classic", "charge", "chemistry", "hydrophobicity"),
+                    bg.noise=NA){
     if(missing(dagPeptides) || class(dagPeptides)!="dagPeptides"){
         stop("dagPeptides should be an object of dagPeptides.\n
              Please try ?fetchSequence to get help.", call.=FALSE)
@@ -63,6 +64,15 @@ testDAU <- function(dagPeptides, dagBackground,
     bg_col_freqs <- lapply(seq_len(ncol(exp_freqs)), function(i){
         do.call(cbind, lapply(bg_freqs, function(.bg){ .bg[,i] }))
     })
+    if ( !is.na(bg.noise) ) {
+      rdirichlet <- function(n,a) {
+        y <- rgamma(n, a, 1)
+        y/sum(y)
+      }
+      bg_col_freqs <- lapply( bg_col_freqs, function( col_freqs ){
+        (1-bg.noise)*col_freqs+bg.noise*do.call(cbind,lapply(seq_len(ncol(col_freqs)),function(i)rdirichlet(nrow(col_freqs),1)))
+      } )
+    }
     ##Z-score = (x-mu)/std
     bg_sd <- do.call(cbind, lapply(bg_col_freqs, function(.bg){
         apply(.bg, 1, sd, na.rm=TRUE)
