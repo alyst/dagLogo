@@ -19,19 +19,18 @@ buildBackgroundModel <- function(dagPeptides,
     length <- dagPeptides@upstreamOffset + dagPeptides@downstreamOffset + 1
     ###### generate random sequences
     ## TODO, howto remove fetchSequence from background
-    if(bg!="inputSet"){
+    SequenceStr <- if(bg!="inputSet"){
         if(missing(proteome) || class(proteome)!="Proteome"){
             stop("proteome should be an object of Proteome. \n
                  Try ?prepareProteome to get help", call.=FALSE)
         }
         if(bg=="wholeGenome"){
-            SequenceStr <- proteome@proteome$SEQUENCE
+            proteome@proteome$SEQUENCE
         }else{
-            proteome.s <- proteome@proteome[!proteome@proteome$SEQUENCE %in% dagPeptides@data$peptide,]
-            SequenceStr <- proteome.s$SEQUENCE
+            proteome@proteome[!proteome@proteome$SEQUENCE %in% dagPeptides@data$peptide,'SEQUENCE']
         }
     }else{
-        SequenceStr <- dagPeptides@data$peptide
+        dagPeptides@data$peptide
     }
     if(model=="anchored"){
         anchorAA <- table(dagPeptides@data$anchorAA)
@@ -63,16 +62,13 @@ buildBackgroundModel <- function(dagPeptides,
     if(length(matches)<n) 
         stop("too less matches in background. Please try different parameters.", 
              call.=FALSE)
-    background <- lapply(1:permutationSize, function(p){
+    background <- lapply(seq_len(permutationSize), function(p){
         s <- sample(matches, n, replace=replacement, prob=NULL)
-        s <- lapply(s, function(.seq) 
-            unlist(lapply(1:nchar(.seq), function(i) substr(.seq, i, i))))
-        s <- do.call(rbind, s)
-        s
+        if(uniqueSeq){
+            s <- unique(s)
+        }
+        do.call( rbind, strsplit( s, "", fixed = TRUE ) )
     })
-    if(uniqueSeq){
-        background <- unique(background)
-    }
     new("dagBackground", 
         background=background,
         permutationSize=permutationSize)
