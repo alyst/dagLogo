@@ -77,13 +77,7 @@ testDAU <- function(dagPeptides, dagBackground,
     
     zscore <- diff/bg_sd
 
-    if(dagPeptides@upstreamOffset>0){
-        coln <- paste("AA", -1*(dagPeptides@upstreamOffset:1), sep="")
-    }
-    coln <- c(coln, "AA0")
-    if(dagPeptides@downstreamOffset>0){
-        coln <- c(coln, paste("AA", 1:dagPeptides@downstreamOffset, sep=""))
-    }
+    coln <- paste("AA", seq(-dagPeptides@upstreamOffset,dagPeptides@downstreamOffset), sep="")
     if(length(coln) == ncol(diff)){
         colnames(diff) <- colnames(zscore) <- coln
     }else{
