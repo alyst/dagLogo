@@ -145,7 +145,7 @@ dagLogo <- function(testDAUresults, type=c("diff", "zscore"),
     }
     
     x.pos <- 2*dw
-    for(j in 1:npos){
+    for(j in seq_len(npos)){
         heights <- dat[, j]
         id <- order(heights)
         heights <- heights[testDAUresults@pvalue[, j]<pvalueCutoff]
@@ -158,7 +158,7 @@ dagLogo <- function(testDAUresults, type=c("diff", "zscore"),
                 h <- reheight(heights[id1[i]])
                 if(heights[id1[i]]>0) flag <- flag+1
                 if(flag==1) {
-                    grid.text(j, x.pos+dw/2, y.pos+dw/2, just=c(.5, .5), gp=textgp)
+                    grid.text(j-1-testDAUresults@upstream, x.pos+dw/2, y.pos+dw/2, just=c(.5, .5), gp=textgp)
                     y.pos <- y.pos + dw
                     flag <- flag+1
                 }
