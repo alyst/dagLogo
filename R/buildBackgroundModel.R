@@ -63,16 +63,13 @@ buildBackgroundModel <- function(dagPeptides,
     if(length(matches)<n) 
         stop("too less matches in background. Please try different parameters.", 
              call.=FALSE)
-    background <- lapply(1:permutationSize, function(p){
+    background <- lapply(seq_len(permutationSize), function(p){
         s <- sample(matches, n, replace=replacement, prob=NULL)
-        s <- lapply(s, function(.seq) 
-            unlist(lapply(1:nchar(.seq), function(i) substr(.seq, i, i))))
-        s <- do.call(rbind, s)
-        s
+        if(uniqueSeq){
+            s <- unique(s)
+        }
+        do.call( rbind, strsplit( s, "", fixed = TRUE ) )
     })
-    if(uniqueSeq){
-        background <- unique(background)
-    }
     new("dagBackground", 
         background=background,
         permutationSize=permutationSize)

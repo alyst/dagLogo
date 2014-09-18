@@ -73,7 +73,8 @@ dagLogo <- function(testDAUresults, type=c("diff", "zscore"),
                     pvalueCutoff=0.05,
                     namehash=NULL,
                     font="Helvetica-Bold", textgp=gpar(),
-                    legend=FALSE){
+                    legend=FALSE,
+                    labelReletiveToAnchor=FALSE){
     if(missing(testDAUresults) || class(testDAUresults)!="testDAUresults"){
         stop("testDAUresults should be an object of testDAUresults\n
              Please try ?testDAU to get help.", call.=FALSE)
@@ -158,7 +159,11 @@ dagLogo <- function(testDAUresults, type=c("diff", "zscore"),
                 h <- reheight(heights[id1[i]])
                 if(heights[id1[i]]>0) flag <- flag+1
                 if(flag==1) {
-                    grid.text(j, x.pos+dw/2, y.pos+dw/2, just=c(.5, .5), gp=textgp)
+                    if(labelReletiveToAnchor){
+                        grid.text(j-1-testDAUresults@upstream, x.pos+dw/2, y.pos+dw/2, just=c(.5, .5), gp=textgp)
+                    }else{
+                        grid.text(j, x.pos+dw/2, y.pos+dw/2, just=c(.5, .5), gp=textgp)
+                    }
                     y.pos <- y.pos + dw
                     flag <- flag+1
                 }

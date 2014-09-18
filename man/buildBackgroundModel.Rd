@@ -48,7 +48,7 @@ buildBackgroundModel(dagPeptides,
     an object of dagBackground which contains background and permutationSize.
 }
 \author{
-    Jianhong Ou, Julie Zhu
+    Jianhong Ou, Alexey Stukalov, Julie Zhu
 }
 \seealso{
     \code{\link{prepareProteome}}

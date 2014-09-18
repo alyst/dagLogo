@@ -24,7 +24,7 @@ fetchSequence(IDs, type="entrezgene", anchorAA=NULL, anchorPos,
     return an object of \code{\linkS4class{dagPeptides}}
 }
 \author{
-    Jianhong Ou, Julie Zhu
+    Jianhong Ou, Alexey Stukalov, Julie Zhu
 }
 
 \seealso{

@@ -77,22 +77,17 @@ fetchSequence <- function(IDs, type="entrezgene", anchorAA=NULL, anchorPos,
         dat <- dat[dat$anchorAA==dat$anchor, ]
     }
     ## extract sequences for logo
-    start <- dat$anchorPos - upstreamOffset
-    end <- dat$anchorPos + downstreamOffset
-    dat$upstream <- substr(dat$peptide, start, dat$anchorPos-1)
-    dat$downstream <- substr(dat$peptide, dat$anchorPos+1, end)
-    seqchar.upstream <- do.call(rbind, lapply(dat$upstream, function(.seq){
-        .seq <- c(rep("NA", upstreamOffset), 
-                  unlist(lapply(1:nchar(.seq), function(i) substr(.seq, i, i))))
-        .seq <- .seq[(length(.seq)-upstreamOffset+1):length(.seq)]
-        .seq
-    }))
-    seqchar.downstream <- do.call(rbind, lapply(dat$downstream, function(.seq){
-        .seq <- c(unlist(lapply(1:nchar(.seq), function(i) substr(.seq, i, i))), 
-                  rep("NA", downstreamOffset))
-        .seq <- .seq[1:downstreamOffset]
-        .seq
-    }))
+    upstreamGuard <- paste0( rep.int( "?", upstreamOffset ), collapse = '' )
+    downstreamGuard <- paste0( rep.int( "?", downstreamOffset ), collapse = '' )
+    peptide.guarded <- paste0( upstreamGuard, dat$peptide, downstreamGuard )
+    dat$upstream <- substr(peptide.guarded, dat$anchorPos, dat$anchorPos+upstreamOffset-1)
+    dat$downstream <- substr(peptide.guarded, dat$anchorPos+upstreamOffset+1, dat$anchorPos+upstreamOffset+downstreamOffset)
+    # convert logo sequences into character matrix
+    seqchar.upstream <- do.call(rbind, strsplit(dat$upstream, "", fixed=TRUE))
+    seqchar.upstream[ seqchar.upstream == '?' ] <- NA
+    seqchar.downstream <- do.call(rbind, strsplit(dat$downstream,"", fixed=TRUE))
+    seqchar.downstream[ seqchar.downstream == '?' ] <- NA
+    
     seqchar <- cbind(seqchar.upstream, dat$anchor, seqchar.downstream)
     new("dagPeptides", data=dat, peptides=seqchar, 
                    upstreamOffset=upstreamOffset, 
