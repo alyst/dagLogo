@@ -68,11 +68,11 @@ testDAU <- function(dagPeptides, dagBackground,
     }
     counts <- function(mat, coln){
         num <- apply(mat, 2, function(.ele){
-            cnt <- table(.ele)
-            cnt <- cnt[names(cnt) %in% coln]
+            cnt <- table(.ele)[coln]
+            names(cnt) <- coln ## just incase not all coln in the dataset
+            cnt[is.na(cnt)] <- 0
             total <- sum(cnt)
-            percentage <- cnt/total
-            percentage[coln]
+            cnt/total
         })
     }
     bg <- lapply(bg, counts, coln)

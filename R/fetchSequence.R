@@ -61,7 +61,7 @@ fetchSequence <- function(IDs, type="entrezgene", anchorAA=NULL, anchorPos,
             protein <- proteome@proteome[proteome@proteome[,"ENTREZ_GENE"] %in% unique(as.character(IDs)), c(2, 1)]
             colnames(protein) <- c("peptide", "entrezgene")
         }else{
-            protein <- proteome@proteome[proteome@proteome[,"ID"] %in% unique(as.character(IDs)), c(2, 3)]
+            protein <- proteome@proteome[proteome@proteome[,"ID"] %in% unique(as.character(IDs)), c("SEQUENCE", "ID")]
             colnames(protein) <- c("peptide", "UniProtKB_ID")
         }
         protein <- protein[!is.na(protein[, 2]),]

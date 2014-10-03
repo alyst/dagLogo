@@ -1,0 +1,30 @@
+CHANGES IN VERSION 1.3.4
+-----------------------
+
+NEW FEATURES
+
+    o No changes classified as 'bug fixes' (package under active
+    development)
+
+BUG FIXES
+
+    o fetchSequences(): when using proteome object created from AAStringSet, 
+    the columns 2 and 3 in the sequences data frame do not contain the expected 
+    values.
+    o testDAU(): the counts() function returned NA for letters that were missing 
+    in a given matrix; that lead to NaNs in the background matrix and to errors 
+    during dagLogo() plotting. changed counts() to return 0 for missing letters.
+    o fix the typo in dagLogo()
+
+CHANGES IN VERSION 1.3.3
+-----------------------
+
+NEW FEATURES
+
+    o add background Noise into test
+    o column label relative to the anchor when draw logos
+
+BUG FIXES
+
+    o No changes classified as 'bug fixes' (package under active
+    development)
