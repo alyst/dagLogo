@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.5.1
+-----------------------
+
+NEW FEATURES
+
+    o No changes classified as 'new features' (package under active
+    development)
+
+BUG FIXES
+    o try to catch the error when mart server does not work.
+
 CHANGES IN VERSION 1.3.6
 -----------------------
 

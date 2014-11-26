@@ -64,12 +64,14 @@ mart <- useMart("ensembl", "dmelanogaster_gene_ensembl")
 dat <- read.csv(system.file("extdata", "dagLogoTestData.csv", package="dagLogo"))
 dat <- dat[1:5,] ##subset to speed sample
 dat
-seq <- fetchSequence(as.character(dat$entrez_geneid), 
+try({
+    seq <- fetchSequence(as.character(dat$entrez_geneid), 
        anchorPos=as.character(dat$NCBI_site), 
        mart=mart, 
        upstreamOffset=7, 
        downstreamOffset=7)
-head(seq@peptides)
+    head(seq@peptides)
+})
 @
 
 Sometimes you may already have the peptides sequences in hand. You will use 
