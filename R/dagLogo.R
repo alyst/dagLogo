@@ -115,12 +115,19 @@ dagLogo <- function(testDAUresults, type=c("diff", "zscore"),
     dw <- 1/(npos+2)
     ##check font height to fix the number size
     plot.new()
-    cex <- 1
+    line1 <- as.numeric(convertUnit(unit(1, "strwidth", "W"), "npc"))
+    cex <- dw/line1
     if(length(textgp)==0){
-        sheight <- strheight("0123456789", units="user")
-        cex <- 1/(sheight/dw)
-        textgp <- gpar(cex=cex)
+        pin <- dev.size("in")
+        cex1 <- ifelse(pin[1L] > pin[2L],
+                       cex * pin[2L]/pin[1L],
+                       cex)
+        textgp <- gpar(cex=.8 * cex1)
     }
+    lwd <- cex/3
+    x0 <- dw
+    x1 <- 4/5 * dw
+    x2 <- 6/5 * dw
     ##set ylim
     datN <- apply(dat, 2, function(.col) sum(.col[.col<0]))
     datP <- apply(dat, 2, function(.col) sum(.col[.col>0]))
@@ -134,18 +141,18 @@ dagLogo <- function(testDAUresults, type=c("diff", "zscore"),
     
     ##draw axis
     x.pos <- 0
-    grid.text(0, 7*dw/4, remap(0)+dw/2, just=c(.5, .5), gp=textgp)
-    grid.lines(x=7*dw/4, y=c(remap(0)+dw, 1), arrow=arrow(length=unit(0.02, "npc")))
-    grid.lines(x=7*dw/4, y=c(remap(0), 0), arrow=arrow(length=unit(0.02, "npc")))
+    grid.text(0, x0, remap(0)+dw/2, just=c(.5, .5), gp=textgp)
+    grid.lines(x=x0, y=c(remap(0)+dw, 1), arrow=arrow(length=unit(0.02, "npc")), gp=gpar(lwd=lwd))
+    grid.lines(x=x0, y=c(remap(0), 0), arrow=arrow(length=unit(0.02, "npc")), gp=gpar(lwd=lwd))
     ##draw tick
     tick <- ifelse(type=="diff", 0.1, 10^as.integer(log10(max(abs(as.numeric(dat))))))
     times <- ifelse(type=="diff", 100, 1)
     for(i in c(as.integer(min(datN)/tick):(-1), 1:as.integer(max(datP)/tick))){
-        grid.lines(x=c(2*dw, 7*dw/4), y=remap(i*tick)+dw/2)
-        grid.text(times*tick*i, x=13*dw/8, remap(i*tick)+dw/2, just=c(1, .5), gp=textgp)
+        grid.lines(x=c(x2, x0), y=remap(i*tick)+dw/2, gp=gpar(lwd=lwd))
+        grid.text(times*tick*i, x=x1, remap(i*tick)+dw/2, just=c(1, .5), gp=gpar(cex=lwd))
     }
     
-    x.pos <- 2*dw
+    x.pos <- x0 + dw/2
     for(j in 1:npos){
         heights <- dat[, j]
         id <- order(heights)
@@ -188,10 +195,10 @@ dagLogo <- function(testDAUresults, type=c("diff", "zscore"),
                     "Tyr"="Y", "Val"="V")
         }
         for(i in 1:length(namehash)){
-            grid.text(namehash[i], x=0.7, y=.95-i*0.05*cex, just=c(.5, .5), 
-                      gp=gpar(col=colset[namehash[i]], cex=cex))
-            grid.text(names(namehash)[i], x=0.7+0.03*cex, y=.95-i*0.05*cex, 
-                      just=c(0, .5), gp=gpar(col=colset[namehash[i]], cex=cex))
+            grid.text(namehash[i], x=0.7, y=.95-i*0.05*lwd, just=c(.5, .5), 
+                      gp=gpar(col=colset[namehash[i]], cex=lwd))
+            grid.text(names(namehash)[i], x=0.7+0.03*lwd, y=.95-i*0.05*lwd, 
+                      just=c(0, .5), gp=gpar(col=colset[namehash[i]], cex=lwd))
         }
     }
 }
