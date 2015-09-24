@@ -1,24 +1,41 @@
----
-title: "dagLogo Vignette"
-author: "Jianhong Ou, Lihua Julie Zhu"
-bibliography: bibliography.bib
-output:
-  html_document: BiocStyle::html_document
-  pdf_document: BiocStyle::pdf_document
-abstract: |
-  A sequence logo has been widely used as a graphical representation of an alignment of multiple amino acid or nucleic acid sequences. dagLogo can  visualize significant conserved amio acid sequence patterns in groups,  such as charge, chemistry, hydrophobicity and etc.
-vignette: |
-  %\VignetteIndexEntry{dagLogo Vignette}  %\VignetteEngine{knitr::rmarkdown}  %\VignetteEncoding{UTF-8}
----
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{dagLogo Vignette}
+%\VignetteDepends{dagLogo}
+%\VignetteKeywords{sequence logo}
+%\VignettePackage{dagLogo}
+\documentclass[12pt]{article}
 
-# introduction
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage[numbers]{natbib}
+\usepackage{graphicx}
+\usepackage[section]{placeins}
+\bibliographystyle{plainnat}
+
+\author{Jianhong Ou, Lihua Julie Zhu}
+\begin{document}
+
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(
+concordance=TRUE
+)
+@
+
+\title{dagLogo guide}
+
+\maketitle
+
+\tableofcontents
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
 A sequence logo has been widely used as a graphical representation of an alignment of multiple amino acid or nucleic acid sequences.
-There is a package seqlogo[@Oliver2006] implemented in R to draw DNA sequence logos. 
-And another package motifStack[@Jianhong2012] was developed for drawing sequence logos for Amino Acid, DNA and RNA sequences. motifStack also has the capability for graphical representation of multiple motifs.
+There is a package seqlogo\cite{Oliver2006} implemented in R to draw DNA sequence logos. 
+And another package motifStack\cite{Jianhong2012} was developed for drawing sequence logos for Amino Acid, DNA and RNA sequences. motifStack also has the capability for graphical representation of multiple motifs.
 
-IceLogo[@Colaert2009] is a tool developed in java to visualize significant conserved sequence patterns in
+IceLogo\cite{Colaert2009} is a tool developed in java to visualize significant conserved sequence patterns in
 an alignment of multiple peptide sequence against background sequences. Compare to 
-webLogo[@Crooks2004], which relying on information theory, iceLogo builds on probability theory. It is
+webLogo\cite{Crooks2004}, which relying on information theory, iceLogo builds on probability theory. It is
 reported that iceLogo has a more dynamic nature and is correcter and completer in the analysis of
 conserved sequence patterns.
 
@@ -28,56 +45,57 @@ charge, chemistry, hydrophobicity and etc.
 
 Here we developed a R package:dagLogo based on iceLogo to visualize significant conserved sequence patterns in groups.
 
-#Prepare environment
+\section{Prepare environment}
 You will need ghostscript: the full path to the executable can be set by the environment variable R\_GSCMD. 
 If this is unset, a GhostScript executable will be searched by name on your path. For example, on a Unix, linux or Mac "gs" is used for searching, 
 and on Windows the setting of the environment variable GSC is used, otherwise commands "gswi64c.exe" then "gswin32c.exe" are tried.
 
-Example on Windows: assume that the gswin32c.exe is installed at C:\\ Program Files\\ gs\\ gs9.06\\ bin, then open R and try:
-```{r setenv, eval=FALSE, echo=TRUE}
+Example on Windows: assume that the gswin32c.exe is installed at C:\textbackslash Program Files\textbackslash gs\textbackslash gs9.06\textbackslash bin, then open R and try:
+<<setup, eval=FALSE, echo=TRUE>>=
 Sys.setenv(R_GSCMD=file.path("C:", "Program Files", "gs", 
                              "gs9.06", "bin", "gswin32c.exe"))
-```
+@
 
-# Examples of using dagLogo
-## Step 1, fetch sequences
+\section{Examples of using dagLogo}
+\subsection{Step 1, fetch sequences}
 You should have interesting peptides position info and the identifiers for fetching
 sequences via biomaRt.
-```{r fetchSequences}
+<<fetchSequences>>=
 library(dagLogo)
 library(biomaRt)
 mart <- useMart("ensembl", "dmelanogaster_gene_ensembl")
 dat <- read.csv(system.file("extdata", "dagLogoTestData.csv", 
                             package="dagLogo"))
 dat <- dat[1:5,] ##subset to speed sample
-dat
+head(dat)
 try({
     seq <- fetchSequence(as.character(dat$entrez_geneid), 
-                         anchorPos=as.character(dat$NCBI_site), 
-                         mart=mart, 
-                         upstreamOffset=7, 
-                         downstreamOffset=7)
+       anchorPos=as.character(dat$NCBI_site), 
+       mart=mart, 
+       upstreamOffset=7, 
+       downstreamOffset=7)
     head(seq@peptides)
 })
-```
+@
 
 Sometimes you may already have the peptides sequences in hand. You will use 
 formatSequence function to prepare an object of dagPeptides for further testing. To use 
 formatSequence, you need prepare the proteome by prepareProteome function.
-```{r formatSequence}
-dat <- unlist(read.delim(system.file("extdata", "grB.txt", package="dagLogo"), 
+<<formatSequence>>=
+dat <- unlist(read.delim(system.file("extdata", "grB.txt", 
+                                     package="dagLogo"),
                          header=F, as.is=TRUE))
 head(dat)
 ##prepare proteome from a fasta file
-proteome <- prepareProteome(fasta=system.file("extdata", 
-                                              "HUMAN.fasta",
-                                              package="dagLogo"))
+proteome <- prepareProteome(
+    fasta=system.file("extdata", "HUMAN.fasta",
+                      package="dagLogo"))
 ##prepare object of dagPeptides
 seq <- formatSequence(seq=dat, proteome=proteome, 
                       upstreamOffset=14, downstreamOffset=15)
-```
+@
 
-## Step 2, build background model
+\subsection{Step 2, build background model}
 Once you have an object of dagPeptides in hand, you can start to build background model
 for DAG test. The background could be random subsequence of whole proteome or your inputs.
 If the background was built from whole proteome or proteome without your inputs, 
@@ -87,109 +105,109 @@ To prepare a proteome, there are two methods, from a fasta file or from UniProt 
 Last example shows how to prepare proteome from a fasta file. Here we show how to prepare
 proteome via UniProt webservice.
 
-```{r prepareProteome0}
+<<prepareProteome0>>=
 if(interactive()){
     library(UniProt.ws)
     taxId(UniProt.ws) <- 9606
     proteome <- prepareProteome(UniProt.ws=UniProt.ws)
 }
-```
+@
 
 Then the proteome can be used for background model building. 
 
-```{r prepareProteome}
-bg <- buildBackgroundModel(seq, bg="wholeGenome", proteome=proteome)
-```
+<<prepareProteome>>=
+bg <- buildBackgroundModel(seq, bg="wholeGenome", 
+                           proteome=proteome)
+@
 
-## Step 3, do test
+\subsection{Step 3, do test}
 Test can be done without any change of the symbol pattern or with changes of grouped peptides
 by such as charge, chemistry, hydrophobicity and etc.
 
-```{r testDAU}
+<<testDAU>>=
 t0 <- testDAU(seq, bg)
 t1 <- testDAU(seq, bg, group="classic")
 t2 <- testDAU(seq, bg, group="charge")
 t3 <- testDAU(seq, bg, group="chemistry")
 t4 <- testDAU(seq, bg, group="hydrophobicity")
-```
+@
 
-## Step 4, graphical representation results
-We can use heatmap or logo to show the results.
-```{r dagHeatmap,fig.cap="DAG heatmap",fig.width=6,fig.height=6}
-dagHeatmap(t0) ##Plot a heatmap to show the results
-```
+\subsection{Step 4, graphical representation results}
+We can use heatmap (Figure \ref{fig:dagHeatmap}) or logo (Figure \ref{fig:dagLogo0},\ref{fig:dagLogo1},\ref{fig:dagLogo2},\ref{fig:dagLogo3}) to show the results.
+<<dagHeatmap,fig.cap="Plot a heatmap to show the results",fig.width=6,fig.height=6>>=
+dagHeatmap(t0)
+@
 
-```{r dagLogo0,fig.cap="ungrouped results",fig.width=6,fig.height=4}
-dagLogo(t0) ##Plot a logo to show the ungrouped results
-```
+<<dagLogo0,fig.cap="Plot a logo to show the ungrouped results",fig.width=6,fig.height=4>>=
+dagLogo(t0)
+@
 
-```{r dagLogo1,fig.cap="classic grouped",fig.width=6,fig.height=4}
-##Plot a logo to show the classic grouped results
+<<dagLogo1,fig.cap="Plot a logo to show the classic grouped results",fig.width=6,fig.height=4>>=
 dagLogo(t1, namehash=nameHash(t1@group), legend=TRUE)
-```
+@
 
-```{r dagLogo2,fig.cap="charge grouped",fig.width=6,fig.height=4}
-##Plot a logo to show the charge grouped results
+<<dagLogo2,fig.cap="Plot a logo to show the charge grouped results",fig.width=6,fig.height=4>>=
 dagLogo(t2, namehash=nameHash(t2@group), legend=TRUE)
-```
+@
 
-```{r dagLogo3,fig.cap="chemistry grouped",fig.width=6,fig.height=4}
-##Plot a logo to show the chemistry grouped results
+<<dagLogo3,fig.cap="Plot a logo to show the chemistry grouped results",fig.width=6,fig.height=4>>=
 dagLogo(t3, namehash=nameHash(t3@group), legend=TRUE)
-```
+@
 
-```{r dagLogo4,fig.cap="hydrophobicity grouped",fig.width=6,fig.height=4}
-##Plot a logo to show the hydrophobicity grouped results
+<<dagLogo4,fig.cap="Plot a logo to show the hydrophobicity grouped results",fig.width=6,fig.height=4>>=
 dagLogo(t4, namehash=nameHash(t4@group), legend=TRUE)
-```
+@
 
-# using dagLogo to analysis Catobolite Activator Protein
+\section{using dagLogo to analysis Catobolite Activator Protein}
 CAP (Catabolite Activator Protein, also known as CRP for cAMP Receptor Protein) 
 is a transcription promoter that binds at more than 100 sites within the E. coli genome. 
 
 The motif of the DNA-binding helix-turn-helix motif of the CAP family is drawn by 
 motifStack as Figure \ref{fig:CAPmotif}.
 
-```{r CAPmotif,fig.cap="Catobolite Activator Protein Motif",fig.width=6,fig.height=4}
+<<CAPmotif,fig.cap="The DNA-binding helix-turn-helix motif of the Catobolite Activator Protein Motif (CAP) family ploted by motifStack",fig.width=6,fig.height=4>>=
 library(motifStack)
-protein<-read.table(file.path(find.package("motifStack"),"extdata","cap.txt"))
+protein<-read.table(file.path(find.package("motifStack"),
+                              "extdata","cap.txt"))
 protein<-t(protein[,1:20])
 motif<-pcm2pfm(protein)
 motif<-new("pfm", mat=motif, name="CAP", 
             color=colorset(alphabet="AA",colorScheme="chemistry"))
-##The DNA-binding helix-turn-helix motif of the CAP family ploted by motifStack
 plot(motif)
-```
+@
 
 If we use dagLogo to plot the motif, it will be shown as Figure \ref{fig:CAPdagLogo}.
 Residues 7-13 form the first helix, 14-17 the turn and 18-26 the DNA recognition helix. 
 The glycine at position 15 appears to be critical in forming the turn. 
-```{r CAPdagLogo,fig.cap="Catobolite Activator Protein Motif",fig.width=6,fig.height=4}
+<<CAPdagLogo,fig.cap="The DNA-binding helix-turn-helix motif of the CAP family ploted by dagLogo",fig.width=6,fig.height=4>>=
 library(Biostrings)
-cap <- as.character(readAAStringSet(system.file("extdata", 
-                                                "cap.fasta", 
-                                                package="dagLogo")))
+cap <- as.character(readAAStringSet(
+    system.file("extdata", "cap.fasta", package="dagLogo")))
 data(ecoli.proteome)
 seq <- formatSequence(seq=cap, proteome=ecoli.proteome)
 bg <- buildBackgroundModel(seq, bg="wholeGenome", 
                            proteome=ecoli.proteome, 
                            permutationSize=10L)
-##The DNA-binding helix-turn-helix motif of the CAP family ploted by dagLogo
 t0 <- testDAU(seq, bg)
 dagLogo(t0)
-```
+@
+
 
 If the peptides are grouped by chemistry and then plot, it will be shown as 
 Figure \ref{fig:CAPgroup}. Positions 10, 14, 16, 21 and 25 are partially or 
 completely buried and therefore tend to be populated by hydrophobic amino acids, 
 which are very clear if we group the peptides by chemistry. 
-```{r CAPgroup,fig.cap="Catobolite Activator Protein Motif",fig.width=6,fig.height=4}
-## The DNA-binding helix-turn-helix motif of the CAP family grouped by chemistry
+<<CAPgroup,fig.cap="The DNA-binding helix-turn-helix motif of the CAP family grouped by chemistry",fig.width=6,fig.height=4>>=
 t1 <- testDAU(seq, bg, group="chemistry")
 dagLogo(t1, namehash=nameHash(t1@group), legend=TRUE)
-```
+@
 
-# Session Info
-```{r sessionInfo}
+\section{References}
+
+\bibliography{bibliography}
+
+\section{Session Info}
+<<sessionInfo>>=
 sessionInfo()
-```
+@
+\end{document}
