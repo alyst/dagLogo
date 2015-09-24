@@ -1,3 +1,16 @@
+CHANGES IN VERSION 1.7.2
+-----------------------
+
+NEW FEATURES
+
+    o customize the x axis as the amino acid physical position
+    o update the documentation
+
+BUG FIXES
+
+    o No changes classified as 'bug fixes' (package under active
+    development)
+
 CHANGES IN VERSION 1.7.1
 -----------------------
 

@@ -9,7 +9,8 @@
 \usage{
 dagLogo(testDAUresults, type=c("diff", "zscore"), pvalueCutoff=0.05, namehash=NULL,
                     font="Helvetica-Bold", textgp=gpar(), legend=FALSE, 
-                    labelRelativeToAnchor=FALSE)
+                    labelRelativeToAnchor=FALSE,
+                    labels=NULL)
 }
 \arguments{
   \item{testDAUresults}{output of \code{\link{testDAU}}, should be an object of testDAUresults}
@@ -20,6 +21,7 @@ dagLogo(testDAUresults, type=c("diff", "zscore"), pvalueCutoff=0.05, namehash=NU
   \item{textgp}{text parameter}
   \item{legend}{plot legend or not, default false.}
   \item{labelRelativeToAnchor}{plot label relative to anchor or not, default false.}
+  \item{labels}{the labels in each position.}
 }
 \value{
     none

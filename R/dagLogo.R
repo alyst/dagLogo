@@ -74,7 +74,8 @@ dagLogo <- function(testDAUresults, type=c("diff", "zscore"),
                     namehash=NULL,
                     font="Helvetica-Bold", textgp=gpar(),
                     legend=FALSE,
-                    labelRelativeToAnchor=FALSE){
+                    labelRelativeToAnchor=FALSE,
+                    labels=NULL){
     if(missing(testDAUresults) || class(testDAUresults)!="testDAUresults"){
         stop("testDAUresults should be an object of testDAUresults\n
              Please try ?testDAU to get help.", call.=FALSE)
@@ -88,6 +89,11 @@ dagLogo <- function(testDAUresults, type=c("diff", "zscore"),
     gscmd <- Sys.getenv("R_GSCMD")
     npos <- ncol(dat)
     ncha <- nrow(dat)
+    if(!is.null(labels)){
+        if(length(labels)<npos){
+            stop("The length of labels is too less")
+        }
+    }
     colset <- colorsets(testDAUresults@group)
     colset <- colset[rownames(dat)]
     if(any(is.na(colset))) stop("Not every symbol has its color setting.",
@@ -169,7 +175,11 @@ dagLogo <- function(testDAUresults, type=c("diff", "zscore"),
                     if(labelRelativeToAnchor){
                         grid.text(j-1-testDAUresults@upstream, x.pos+dw/2, y.pos+dw/2, just=c(.5, .5), gp=textgp)
                     }else{
-                        grid.text(j, x.pos+dw/2, y.pos+dw/2, just=c(.5, .5), gp=textgp)
+                        if(!is.null(labels)){
+                            grid.text(labels[j], x.pos+dw/2, y.pos+dw/2, just=c(.5, .5), gp=textgp)
+                        }else{
+                            grid.text(j, x.pos+dw/2, y.pos+dw/2, just=c(.5, .5), gp=textgp)
+                        }
                     }
                     y.pos <- y.pos + dw
                     flag <- flag+1

@@ -1,4 +1,7 @@
 import(methods)
+import(grDevices)
+importFrom(graphics, "plot.new")
+import(stats)
 import(grid)
 importFrom(grImport, PostScriptTrace, readPicture, picture)
 import(biomaRt)
