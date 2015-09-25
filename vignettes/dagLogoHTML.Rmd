@@ -1,14 +1,17 @@
 ---
 title: "dagLogo Vignette"
 author: "Jianhong Ou, Lihua Julie Zhu"
+date: "`r doc_date()`"
+package: "`r pkg_ver('BiocStyle')`"
 bibliography: bibliography.bib
-output:
-  html_document: BiocStyle::html_document
-  pdf_document: BiocStyle::pdf_document
-abstract: |
+abstract: >
   A sequence logo has been widely used as a graphical representation of an alignment of multiple amino acid or nucleic acid sequences. dagLogo can  visualize significant conserved amio acid sequence patterns in groups,  such as charge, chemistry, hydrophobicity and etc.
-vignette: |
-  %\VignetteIndexEntry{dagLogo Vignette}  %\VignetteEngine{knitr::rmarkdown}  %\VignetteEncoding{UTF-8}
+vignette: >
+  %\VignetteIndexEntry{dagLogo Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output:
+  BiocStyle::html_document
 ---
 
 # introduction
@@ -44,7 +47,7 @@ Sys.setenv(R_GSCMD=file.path("C:", "Program Files", "gs",
 You should have interesting peptides position info and the identifiers for fetching
 sequences via biomaRt.
 ```{r fetchSequences}
-library(dagLogo)
+suppressPackageStartupMessages(library(dagLogo))
 library(biomaRt)
 mart <- useMart("ensembl", "dmelanogaster_gene_ensembl")
 dat <- read.csv(system.file("extdata", "dagLogoTestData.csv", 
@@ -148,7 +151,7 @@ CAP (Catabolite Activator Protein, also known as CRP for cAMP Receptor Protein)
 is a transcription promoter that binds at more than 100 sites within the E. coli genome. 
 
 The motif of the DNA-binding helix-turn-helix motif of the CAP family is drawn by 
-motifStack as Figure \ref{fig:CAPmotif}.
+motifStack as following figure.
 
 ```{r CAPmotif,fig.cap="Catobolite Activator Protein Motif",fig.width=6,fig.height=4}
 library(motifStack)
@@ -161,7 +164,7 @@ motif<-new("pfm", mat=motif, name="CAP",
 plot(motif)
 ```
 
-If we use dagLogo to plot the motif, it will be shown as Figure \ref{fig:CAPdagLogo}.
+If we use dagLogo to plot the motif, it will be shown as following figure.
 Residues 7-13 form the first helix, 14-17 the turn and 18-26 the DNA recognition helix. 
 The glycine at position 15 appears to be critical in forming the turn. 
 ```{r CAPdagLogo,fig.cap="Catobolite Activator Protein Motif",fig.width=6,fig.height=4}
@@ -180,7 +183,7 @@ dagLogo(t0)
 ```
 
 If the peptides are grouped by chemistry and then plot, it will be shown as 
-Figure \ref{fig:CAPgroup}. Positions 10, 14, 16, 21 and 25 are partially or 
+following figure. Positions 10, 14, 16, 21 and 25 are partially or 
 completely buried and therefore tend to be populated by hydrophobic amino acids, 
 which are very clear if we group the peptides by chemistry. 
 ```{r CAPgroup,fig.cap="Catobolite Activator Protein Motif",fig.width=6,fig.height=4}

@@ -61,13 +61,13 @@ Sys.setenv(R_GSCMD=file.path("C:", "Program Files", "gs",
 You should have interesting peptides position info and the identifiers for fetching
 sequences via biomaRt.
 <<fetchSequences>>=
-library(dagLogo)
+suppressPackageStartupMessages(library(dagLogo))
 library(biomaRt)
 mart <- useMart("ensembl", "dmelanogaster_gene_ensembl")
 dat <- read.csv(system.file("extdata", "dagLogoTestData.csv", 
                             package="dagLogo"))
 dat <- dat[1:5,] ##subset to speed sample
-head(dat)
+dat
 try({
     seq <- fetchSequence(as.character(dat$entrez_geneid), 
        anchorPos=as.character(dat$NCBI_site), 
