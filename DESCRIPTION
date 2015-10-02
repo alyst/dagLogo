@@ -1,8 +1,8 @@
 Package: dagLogo
 Type: Package
 Title: dagLogo
-Version: 1.7.3
-Date: 2014-10-26
+Version: 1.7.4
+Date: 2015-10-02
 Author: Jianhong Ou, Alexey Stukalov, Niraj Nirala, Usha Acharya, Lihua Julie Zhu
 Maintainer: Jianhong Ou <jianhong.ou@umassmed.edu>
 Description: Visualize significant conserved amino acid sequence pattern in groups based on probability theory.

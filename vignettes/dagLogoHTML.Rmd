@@ -2,7 +2,7 @@
 title: "dagLogo Vignette"
 author: "Jianhong Ou, Lihua Julie Zhu"
 date: "`r doc_date()`"
-package: "`r pkg_ver('BiocStyle')`"
+package: "`r pkg_ver('dagLogo')`"
 bibliography: bibliography.bib
 abstract: >
   A sequence logo has been widely used as a graphical representation of an alignment of multiple amino acid or nucleic acid sequences. dagLogo can  visualize significant conserved amio acid sequence patterns in groups,  such as charge, chemistry, hydrophobicity and etc.
