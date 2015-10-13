@@ -1,7 +1,7 @@
 Package: dagLogo
 Type: Package
 Title: dagLogo
-Version: 1.8.0
+Version: 1.9.0
 Date: 2015-10-02
 Author: Jianhong Ou, Alexey Stukalov, Niraj Nirala, Usha Acharya, Lihua Julie Zhu
 Maintainer: Jianhong Ou <jianhong.ou@umassmed.edu>
