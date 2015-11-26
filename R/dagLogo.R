@@ -91,7 +91,7 @@ dagLogo <- function(testDAUresults, type=c("diff", "zscore"),
     ncha <- nrow(dat)
     if(!is.null(labels)){
         if(length(labels)<npos){
-            stop("The length of labels is too less")
+            stop("The length of labels is too short")
         }
     }
     colset <- colorsets(testDAUresults@group)
