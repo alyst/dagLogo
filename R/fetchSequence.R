@@ -45,7 +45,8 @@ fetchSequence <- function(IDs, type="entrezgene", anchorAA=NULL, anchorPos,
         anchorAA <- substr(anchorPos, 1, 1)
         anchorPos <- as.numeric(substring(anchorPos, 2))
     }
-    inputs <- data.frame(IDs, anchorAA, anchorPos)
+    inputs <- data.frame(IDs, anchorAA, anchorPos, stringsAsFactors = FALSE)
+    colnames(inputs) <- c( type, 'anchorAA', 'anchorPos' )
     ## retreive sequence
     if(!missing(mart)){
         protein <- getSequence(id=unique(as.character(IDs)), 
@@ -53,28 +54,28 @@ fetchSequence <- function(IDs, type="entrezgene", anchorAA=NULL, anchorPos,
                                seqType="peptide",
                                mart=mart)
     }else{
-        if(!(type %in% c("entrezgene", "UniProtKB_ID"))){
-            stop("Only accept 'entrezgene' or 'UniProtKB_ID' for type when using proteome.",
+        id_col <- switch( type, entrezgene = 'ENTREZ_GENE', UniProtKB_ID = 'ID', 'ID' )
+        if ( !id_col %in% colnames(proteome@proteome) ) {
+            stop( type, " sequence identifiers are not supported by the specified proteome",
                  call.=FALSE)
         }
-        if(type=="entrezgene"){
-            protein <- proteome@proteome[proteome@proteome[,"ENTREZ_GENE"] %in% unique(as.character(IDs)), c(2, 1)]
-            colnames(protein) <- c("peptide", "entrezgene")
-        }else{
-            protein <- proteome@proteome[proteome@proteome[,"ID"] %in% unique(as.character(IDs)), c("SEQUENCE", "ID")]
-            colnames(protein) <- c("peptide", "UniProtKB_ID")
-        }
-        protein <- protein[!is.na(protein[, 2]),]
+        protein <- proteome@proteome[proteome@proteome[,id_col] %in% unique(as.character(IDs)), c('SEQUENCE', id_col)]
+        colnames(protein) <- c("peptide", type)
+        protein <- protein[!is.na(protein[, type]),]
     }
     
     dat <- merge(inputs, protein, by.x=1, by.y=2)
     dat$peptide <- toupper(dat$peptide)
-    dat$anchor <- unlist(mapply(function(pep, pos){substr(pep, pos, pos)},
-                              dat[, 4], dat$anchorPos))
+    dat$anchor <- unlist(mapply(substr,
+                              dat$peptide, dat$anchorPos, dat$anchorPos))
     ##colnames(dat)==c("IDs", "anchorAA", "anchorPos", "peptide", "anchor")
-    ## check sequence of NCBIsites
-    if(!is.null(anchorAA)[1]){
-        dat <- dat[dat$anchorAA==dat$anchor, ]
+    ## check that queried anchor matches the actual residue in the sequence
+    if( 'anchorAA' %in% colnames(dat) ){
+        anchor_mask <- dat$anchorAA == dat$anchor
+        if ( any( !anchor_mask ) ) {
+          warning( sum(!anchor_mask), ' sequence(s) have another AA at anchor position, excluded' )
+          dat <- dat[anchor_mask,]
+        }
     }
     ## extract sequences for logo
     upstreamGuard <- paste0( rep.int( "?", upstreamOffset ), collapse = '' )
