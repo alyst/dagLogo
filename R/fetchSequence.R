@@ -45,7 +45,7 @@ fetchSequence <- function(IDs, type="entrezgene", anchorAA=NULL, anchorPos,
         anchorAA <- substr(anchorPos, 1, 1)
         anchorPos <- as.numeric(substring(anchorPos, 2))
     }
-    inputs <- data.frame(IDs, anchorAA, anchorPos, stringsAsFactors = FALSE)
+    inputs <- data.frame(IDs = IDs, anchorAA = anchorAA, anchorPos = anchorPos, stringsAsFactors = FALSE)
     colnames(inputs) <- c( type, 'anchorAA', 'anchorPos' )
     ## retreive sequence
     if(!missing(mart)){
@@ -68,7 +68,6 @@ fetchSequence <- function(IDs, type="entrezgene", anchorAA=NULL, anchorPos,
     dat$peptide <- toupper(dat$peptide)
     dat$anchor <- unlist(mapply(substr,
                               dat$peptide, dat$anchorPos, dat$anchorPos))
-    ##colnames(dat)==c("IDs", "anchorAA", "anchorPos", "peptide", "anchor")
     ## check that queried anchor matches the actual residue in the sequence
     if( 'anchorAA' %in% colnames(dat) ){
         anchor_mask <- dat$anchorAA == dat$anchor
