@@ -19,19 +19,18 @@ buildBackgroundModel <- function(dagPeptides,
     length <- dagPeptides@upstreamOffset + dagPeptides@downstreamOffset + 1
     ###### generate random sequences
     ## TODO, howto remove fetchSequence from background
-    if(bg!="inputSet"){
+    SequenceStr <- if(bg!="inputSet"){
         if(missing(proteome) || class(proteome)!="Proteome"){
             stop("proteome should be an object of Proteome. \n
                  Try ?prepareProteome to get help", call.=FALSE)
         }
         if(bg=="wholeGenome"){
-            SequenceStr <- proteome@proteome$SEQUENCE
+            proteome@proteome$SEQUENCE
         }else{
-            proteome.s <- proteome@proteome[!proteome@proteome$SEQUENCE %in% dagPeptides@data$peptide,]
-            SequenceStr <- proteome.s$SEQUENCE
+            proteome@proteome$SEQUENCE[!proteome@proteome$SEQUENCE %in% dagPeptides@data$peptide]
         }
     }else{
-        SequenceStr <- dagPeptides@data$peptide
+        dagPeptides@data$peptide
     }
     if(model=="anchored"){
         anchorAA <- table(dagPeptides@data$anchorAA)
