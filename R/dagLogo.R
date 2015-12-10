@@ -75,7 +75,8 @@ dagLogo <- function(testDAUresults, type=c("diff", "zscore"),
                     font="Helvetica-Bold", textgp=gpar(),
                     legend=FALSE,
                     labelRelativeToAnchor=FALSE,
-                    labels=NULL){
+                    labels=NULL,
+                    newpage=TRUE){
     if(missing(testDAUresults) || class(testDAUresults)!="testDAUresults"){
         stop("testDAUresults should be an object of testDAUresults\n
              Please try ?testDAU to get help.", call.=FALSE)
@@ -120,7 +121,7 @@ dagLogo <- function(testDAUresults, type=c("diff", "zscore"),
     
     dw <- 1/(npos+2)
     ##check font height to fix the number size
-    plot.new()
+    if (newpage) plot.new()
     line1 <- as.numeric(convertUnit(unit(1, "strwidth", "W"), "npc"))
     cex <- dw/line1
     if(length(textgp)==0){
