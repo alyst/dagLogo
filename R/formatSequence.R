@@ -23,33 +23,26 @@ formatSequence <- function(seq, proteome, upstreamOffset, downstreamOffset){
     
     ## retrieve anchorAA and anchorPos
     center <- upstreamOffset + 1
-    anchorAA <- unlist(lapply(seq, function(.ele) substr(.ele, center, center)))
     if(proteome@type=="UniProt") {
         type <- "entrezgene"
     } else {
         type <- ""
     }
     ## blast
-    m <- do.call(rbind, lapply(seq, function(.seq) {
+    dat <- as.data.frame(do.call(rbind, lapply(seq, function(.seq) {
         .m <- regexpr(.seq, proteome@proteome$SEQUENCE)
-        .id <- which(.m!=-1)
-        .id <- .id[1]
-        .pos <- .m[.id]
-        c(.id, .pos)
-    }))
-    anchorPos <- m[,2]
- #   anchorAA <- anchorAA[!is.na(anchorPos)]
- #   m <- m[!is.na(anchorPos), ]
- #   anchorPos <- anchorPos[!is.na(anchorPos)]
+        .ix <- which(.m!=-1)[1]
+        c(ix = .ix, anchorPos = .m[.id])
+    })), stringsAsFactors=FALSE)
+    dat$anchorAA <- unlist(lapply(seq, function(.ele) substr(.ele, center, center)))
+    dat$anchor <- dat$anchorAA
     if(proteome@type=="UniProt") {
-        IDs <- proteome@proteome[m[,1], "ENTREZ_GENE"]
+        dat$IDs <- proteome@proteome$ENTREZ_GENE[dat$ix]
     }else{
-        IDs <- NA
+        dat$IDs <- NA
     }
-    peptide <- proteome@proteome[m[,1], "SEQUENCE"]
-    anchor <- anchorAA
-    dat <- data.frame(IDs=IDs, anchorAA=anchorAA, 
-                      anchorPos=anchorPos, peptide=peptide, anchor=anchor)
+    dat$peptide <- proteome@proteome$SEQUENCE[dat$ix]
+#   dat <- subset(dat, !is.na(anchorPos))
     dat$upstream <- substr(seq, 1, upstreamOffset)
     dat$downstream <- substr(seq, upstreamOffset+2, upstreamOffset+downstreamOffset+1)
     seqchar.upstream <- do.call(rbind, lapply(dat$upstream, function(.seq){
